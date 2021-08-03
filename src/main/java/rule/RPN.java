@@ -63,7 +63,7 @@ public class RPN {
         return optHandler.finalResult(ret);
     }
 
-    public static RPN rpn(String rule) {
+    public static RPN build(String rule) {
         if (null == rule || "".equals(rule)) {
             return null;
         }

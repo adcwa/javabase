@@ -16,7 +16,7 @@ import rule.opt.RuleOptHandler;
  * + 匹配前面的子表达式一次或多次。要匹配 + 字符，请使用 \+。
  * ? 匹配前面的子表达式零次或一次，或指明一个非贪婪限定符。要匹配 ? 字符，请使用 \?。
  */
-public class RuleExtractorTest {
+public class RuleTest {
 
     public static void main(String[] args) {
 //        // [A, B, +, C, D, -, *]
@@ -30,38 +30,26 @@ public class RuleExtractorTest {
 //        //[A, B, !, |, C, |, D, E, ^, |]
 //        System.out.println( RPN.rpn("A|!B|C|D^E").toString());
 
-//        test();
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < 200; i++) {
-            testC(10000,i+3);
-        }
-        long end = System.currentTimeMillis();
-        System.out.println( " cost "+(end-start));
+        test();
+//        long start = System.currentTimeMillis();
+//        // 模拟多个车
+//        for (int i = 0; i < 200; i++) {
+//            testC(10000,i+3);
+//        }
+//        long end = System.currentTimeMillis();
+//        System.out.println( " cost "+(end-start));
     }
-    public static void test(){
-        BitMap bitMap = new BitMap(10000);
-        for (int i = 50; i < 10000; i++) {
-            BitMapUtils.setBit(bitMap.getBits(),i);
-        }
-        BitMapUtils.setBit(bitMap.getBits(),3);
-
-        RPN rpn = RPN.rpn("(F11|F22&311&(411|11))^F11");
-                System.out.println(rpn.toString());
-        Boolean aBoolean = RPN.handleRule(rpn, new RuleOptHandler(bitMap));
-        System.out.println(aBoolean );
-    }
-
-
-
     public static void testC(int capacity , int step ){
+        // 模拟一个车的配置
         BitMap bitMap = new BitMap(capacity);
-
+        // 此处的i为特征的ID，模拟10000个特征
         for (int i = 10; i < 10000; i+=step) {
             BitMapUtils.setBit(bitMap.getBits(),i);
         }
         BitMapUtils.setBit(bitMap.getBits(),3);
         long start = System.currentTimeMillis();
         int cnt = 0;
+        // 模拟891多条规则
         for (int i = 1; i < 100; i++) {
             for (int j = 1; j < 10; j++) {
                 String rule  = new StringBuilder().
@@ -76,7 +64,7 @@ public class RuleExtractorTest {
                         append("(").append(9).append(i).append(j).append("|").append(i).append(j).append(")").
                         append("^F11").toString();
 //                String rule  = "1"+i+""+j;
-                RPN rpn = RPN.rpn(rule);
+                RPN rpn = RPN.build(rule);
 //                System.out.println(rpn.toString());
                 Boolean aBoolean = RPN.handleRule(rpn, new RuleOptHandler(bitMap));
 //                System.out.println(aBoolean +" "+rule);
@@ -84,6 +72,26 @@ public class RuleExtractorTest {
             }
         }
         long end = System.currentTimeMillis();
-//        System.out.println(cnt +" cost "+(end-start));
+        System.out.println(cnt +" cost "+(end-start));
+    }
+
+    public static void test(){
+        long start = System.currentTimeMillis();
+        // 模拟具有10000个特征的车，通过byte[]数组下标为特征id构建位图
+        System.out.println("模拟具有10000个特征的车");
+        BitMap bitMap = new BitMap(10000);
+        for (int i = 50; i < 10000; i+=6) {
+            BitMapUtils.setBit(bitMap.getBits(),i);
+        }
+        BitMapUtils.setBit(bitMap.getBits(),3);
+        // 目前支持&｜！^(),运算符可以通过OptHandler自定义
+        String rule = "(F11|F22&311&(411|11))^F11";
+        RPN rpn = RPN.build(rule);
+        System.out.println("使用条件："+rule);
+        System.out.println("泥波兰表达式："+rpn.toString());
+        Boolean aBoolean = RPN.handleRule(rpn, new RuleOptHandler(bitMap));
+        System.out.println("解析结果"+aBoolean );
+        long end = System.currentTimeMillis();
+        System.out.println(" cost "+(end-start));
     }
 }

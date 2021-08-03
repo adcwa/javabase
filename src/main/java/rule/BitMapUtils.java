@@ -20,11 +20,6 @@ public class BitMapUtils {
     public  static  void setBit(byte[] bits, int num){
         bits[num>>3] |=  1 << num%8;
     }
-
-    public  static  void setBitn(byte[] bits, int num){
-        bits[num>>3] |=  1 << num%8;
-    }
-
     /**
      * 判断是否存在，存在则返回 1
      * @param bits
