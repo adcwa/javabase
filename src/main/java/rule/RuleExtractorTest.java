@@ -1,8 +1,5 @@
 package rule;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * 资料：正则表达式中的特殊字符（需要转义）
  * ^ 匹配输入字符串的开始位置，除非在方括号表达式中使用，此时它表示不接受该字符集合。要匹配 ^ 字符本身，请使用 \^。
@@ -21,34 +18,16 @@ public class RuleExtractorTest {
 
     public static void main(String[] args) {
 
-        RuleExtractor re = new RuleExtractor();
-
-//        String[] split = "A&B&C|D".split(RuleExtractor.REG);
-//        System.out.println(Arrays.stream(split).collect(Collectors.joining(" ")));;
-//
-//         split = "AA&BBB&CCCC|DDDDDD".split(RuleExtractor.REG);
-//        System.out.println(Arrays.stream(split).collect(Collectors.joining(" ")));;
-//
-//        split = "(A)&[B]&{C|D}".split(RuleExtractor.REG);
-//        System.out.println(Arrays.stream(split).collect(Collectors.joining(" ")));;
-//
-//        split = "(A)&[BB]&{CCC|DDDD}=>EEEEE&GGGGG".split(RuleExtractor.REG);
-//        System.out.println(Arrays.stream(split).collect(Collectors.joining(" ")));;
-//
-//        split = "(A)&[B]&{C|D}<=H|J".split(RuleExtractor.REG);
-//        System.out.println(Arrays.stream(split).collect(Collectors.joining(" ")));;
-//
-//        split = "(A)&[B]&{C|D}<=>K|L".split(RuleExtractor.REG);
-//        System.out.println(Arrays.stream(split).collect(Collectors.joining(" ")));;
-//
-//
-//        split = "{[(A)]&[B]&{C|D}}<=>K|L".split(RuleExtractor.REG);
-//        System.out.println(Arrays.stream(split).filter(t-> null != t && !"".equals(t)).collect(Collectors.joining(" ")));;
-
-
-        RuleExtractor extractor = RuleExtractor.npr("{[(A)]&[B]&{C|D}}<=>K|L");
-
-        System.out.println(extractor.toString());
+        // [A, B, +, C, D, -, *]
+        System.out.println( RPN.rpn("((A+B))*(C-D)").toString());
+        // [A, B, +, C, *, D, -]
+        System.out.println( RPN.rpn("((A+B))*C-D").toString());
+        // [A, B, +, C, *, D, -]
+        System.out.println( RPN.rpn("(((A+B))*C)-D").toString());
+        // [A, !, B, C, &, |]
+        System.out.println( RPN.rpn("!A|B&C").toString());
+        //[A, B, !, |, C, |, D, E, ^, |]
+        System.out.println( RPN.rpn("A|!B|C|D^E").toString());
 
 
 

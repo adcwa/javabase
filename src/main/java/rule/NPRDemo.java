@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class NPR {
+public class NPRDemo {
 
     /**
      * 将中缀表达式转换为后缀表达式（逆波兰表达式）
