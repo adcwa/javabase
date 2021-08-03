@@ -4,14 +4,45 @@ import rule.BitMap;
 import rule.BitMapUtils;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RuleOptHandler implements  OptHandler<Boolean> {
 
     private BitMap bitMap ;
-
     private static String F_TRUE = "_TRUE";
     private static String F_FALSE = "_FALSE";
+
+    // 所有的特征
+    private static Map<String,Integer> featureMap  = new HashMap<>();
+
+    // 按特征族分组
+    private static Map<String,Map<String,Integer>> groupByFamily = new HashMap<>();
+
+    // 通过特征找到其特征族
+    private static Map<String,String> featureParentMap  = new HashMap<>();
+
+    static {
+        // init test 特征数据 ,
+        int id = 1;
+        for (int i = 1; i < 60; i++) {
+            String fm = "F"+i;
+            Map<String,Integer> m = new HashMap<>();
+            for (int j = 0; j < 20; j++) {
+                String s = fm + j;
+                m.put(s,id++);
+                featureParentMap.put(s,fm);
+            }
+            groupByFamily.putIfAbsent(fm,new HashMap<>());
+            groupByFamily.get(fm).putAll(m);
+            featureMap.putAll(m);
+        }
+    }
+    public static  Integer getId(String v ){
+        return featureMap.containsKey(v)? featureMap.get(v):Integer.parseInt(v);
+    }
+
 
     public RuleOptHandler(BitMap bitMap) {
         this.bitMap = bitMap;
@@ -51,15 +82,14 @@ public class RuleOptHandler implements  OptHandler<Boolean> {
 
         byte[] newBits = Arrays.copyOf(bits, bits.length);
         if(!F_TRUE.equals(v1)){
-            BitMapUtils.setBit(newBits,Integer.parseInt(v1));
+            BitMapUtils.setBit(newBits,getId(v1));
         }
         if(!F_TRUE.equals(v2)){
-            BitMapUtils.setBit(newBits,Integer.parseInt(v2));
+            BitMapUtils.setBit(newBits,getId(v2));
         }
         List<Integer> match = BitMapUtils.match(bits, newBits);
 
         if(match.size()>0){
-            // TODO 提示处理
             return F_FALSE;
         }
         return F_TRUE;
@@ -76,19 +106,19 @@ public class RuleOptHandler implements  OptHandler<Boolean> {
             result =  F_FALSE;
         }else if (F_FALSE.equals(v2)){
             byte[] newBits = Arrays.copyOf(bits, bits.length);
-            BitMapUtils.setBit(newBits,Integer.parseInt(v1));
+            BitMapUtils.setBit(newBits,getId(v1));
             List<Integer> match2 = BitMapUtils.match(bits, newBits);
             result =  match2.size()==0?F_TRUE:F_FALSE;
         }else if(F_FALSE.equals(v1)){
             byte[] newBits = Arrays.copyOf(bits, bits.length);
-            BitMapUtils.setBit(newBits,Integer.parseInt(v2));
+            BitMapUtils.setBit(newBits,getId(v2));
             List<Integer> match = BitMapUtils.match(bits, newBits);
             result =  match.size()==0?F_TRUE:F_FALSE;
         }else{
             byte[] newBits = Arrays.copyOf(bits, bits.length);
-            BitMapUtils.setBit(newBits,Integer.parseInt(v1));
+            BitMapUtils.setBit(newBits,getId(v1));
             byte[] newBits2 = Arrays.copyOf(bits, bits.length);
-            BitMapUtils.setBit(newBits2,Integer.parseInt(v2));
+            BitMapUtils.setBit(newBits2,getId(v2));
 
             List<Integer> match = BitMapUtils.match(bits, newBits);
             List<Integer> match2 = BitMapUtils.match(bits, newBits2);
@@ -111,7 +141,7 @@ public class RuleOptHandler implements  OptHandler<Boolean> {
         byte[] bits = bitMap.getBits();
 
         byte[] newBits = Arrays.copyOf(bits, bits.length);
-        int vi = Integer.parseInt(v);
+        int vi = getId(v);
 
         BitMapUtils.setBit(newBits, vi);
 
@@ -123,10 +153,34 @@ public class RuleOptHandler implements  OptHandler<Boolean> {
     }
 
     private  String handlerXor(String v){
-       System.out.println(String.format("^%s",v));
-
-//        return String.format(" xor  %s",v);
-        throw new RuntimeException("not support operate xor ");
+       if(F_TRUE.equals(v)){
+           return F_FALSE;
+       }else if (F_FALSE.equals(v)){
+           return F_TRUE;
+       }
+        String parent = featureParentMap.get(v);
+        if(null !=parent){
+            Map<String, Integer> map = groupByFamily.get(parent);
+            // 配置表或者车型配置的bitmap表示
+            byte[] bits = bitMap.getBits();
+            // 逐个特征的判断
+            for (String s : map.keySet()) {
+                byte[] newBits = Arrays.copyOf(bits, bits.length);
+                int vi = map.get(s);
+                BitMapUtils.setBit(newBits, vi);
+                List<Integer> match = BitMapUtils.match(bits, newBits);
+                if(s.equals(v )){
+                    if(match.size()==0){
+                        return F_FALSE;
+                    }
+                }else{
+                    if(match.size()==0){
+                        return F_TRUE;
+                    }
+                }
+            }
+        }
+        return F_FALSE;
     }
 
     @Override

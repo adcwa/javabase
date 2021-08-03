@@ -38,13 +38,14 @@ public class RuleExtractorTest {
         long end = System.currentTimeMillis();
         System.out.println( " cost "+(end-start));
     }
-
     public static void test(){
         BitMap bitMap = new BitMap(10000);
-        for (int i = 1; i < 10000; i++) {
+        for (int i = 50; i < 10000; i++) {
             BitMapUtils.setBit(bitMap.getBits(),i);
         }
-        RPN rpn = RPN.rpn("111&211&311&(411|11)");
+        BitMapUtils.setBit(bitMap.getBits(),3);
+
+        RPN rpn = RPN.rpn("(F11|F22&311&(411|11))^F11");
                 System.out.println(rpn.toString());
         Boolean aBoolean = RPN.handleRule(rpn, new RuleOptHandler(bitMap));
         System.out.println(aBoolean );
@@ -55,14 +56,14 @@ public class RuleExtractorTest {
     public static void testC(int capacity , int step ){
         BitMap bitMap = new BitMap(capacity);
 
-        for (int i = 1; i < 10000; i+=step) {
+        for (int i = 10; i < 10000; i+=step) {
             BitMapUtils.setBit(bitMap.getBits(),i);
         }
+        BitMapUtils.setBit(bitMap.getBits(),3);
         long start = System.currentTimeMillis();
         int cnt = 0;
         for (int i = 1; i < 100; i++) {
             for (int j = 1; j < 10; j++) {
-//                RPN rpn = RPN.rpn("(1&5&30&31)|40");
                 String rule  = new StringBuilder().
                         append(1).append(i).append(j).append("&").
                         append(2).append(i).append(j).append("&").
@@ -72,7 +73,9 @@ public class RuleExtractorTest {
                         append(6).append(i).append(j).append("&").
                         append(7).append(i).append(j).append("&").
                         append(8).append(i).append(j).append("&").
-                        append("(").append(9).append(i).append(j).append("|").append(i).append(j).append(")").toString();
+                        append("(").append(9).append(i).append(j).append("|").append(i).append(j).append(")").
+                        append("^F11").toString();
+//                String rule  = "1"+i+""+j;
                 RPN rpn = RPN.rpn(rule);
 //                System.out.println(rpn.toString());
                 Boolean aBoolean = RPN.handleRule(rpn, new RuleOptHandler(bitMap));
@@ -81,6 +84,6 @@ public class RuleExtractorTest {
             }
         }
         long end = System.currentTimeMillis();
-        System.out.println(cnt +" cost "+(end-start));
+//        System.out.println(cnt +" cost "+(end-start));
     }
 }
