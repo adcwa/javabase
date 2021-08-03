@@ -19,7 +19,6 @@ import rule.opt.RuleOptHandler;
 public class RuleExtractorTest {
 
     public static void main(String[] args) {
-
 //        // [A, B, +, C, D, -, *]
 //        System.out.println( RPN.rpn("((A+B))*(C-D)").toString());
 //        // [A, B, +, C, *, D, -]
@@ -31,17 +30,57 @@ public class RuleExtractorTest {
 //        //[A, B, !, |, C, |, D, E, ^, |]
 //        System.out.println( RPN.rpn("A|!B|C|D^E").toString());
 
-        BitMap bitMap = new BitMap(102);
+//        test();
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 200; i++) {
+            testC(10000,i+3);
+        }
+        long end = System.currentTimeMillis();
+        System.out.println( " cost "+(end-start));
+    }
 
-        for (int i = 0; i < 20; i++) {
+    public static void test(){
+        BitMap bitMap = new BitMap(10000);
+        for (int i = 1; i < 10000; i++) {
             BitMapUtils.setBit(bitMap.getBits(),i);
         }
+        RPN rpn = RPN.rpn("111&211&311&(411|11)");
+                System.out.println(rpn.toString());
+        Boolean aBoolean = RPN.handleRule(rpn, new RuleOptHandler(bitMap));
+        System.out.println(aBoolean );
+    }
 
-        RPN rpn = RPN.rpn("A|!B|C|D^E");
-        System.out.println(rpn.toString());
-        RPN.handleRule(rpn,new RuleOptHandler(bitMap));
 
 
+    public static void testC(int capacity , int step ){
+        BitMap bitMap = new BitMap(capacity);
 
+        for (int i = 1; i < 10000; i+=step) {
+            BitMapUtils.setBit(bitMap.getBits(),i);
+        }
+        long start = System.currentTimeMillis();
+        int cnt = 0;
+        for (int i = 1; i < 100; i++) {
+            for (int j = 1; j < 10; j++) {
+//                RPN rpn = RPN.rpn("(1&5&30&31)|40");
+                String rule  = new StringBuilder().
+                        append(1).append(i).append(j).append("&").
+                        append(2).append(i).append(j).append("&").
+                        append(3).append(i).append(j).append("&").
+                        append(4).append(i).append(j).append("&").
+                        append(5).append(i).append(j).append("&").
+                        append(6).append(i).append(j).append("&").
+                        append(7).append(i).append(j).append("&").
+                        append(8).append(i).append(j).append("&").
+                        append("(").append(9).append(i).append(j).append("|").append(i).append(j).append(")").toString();
+                RPN rpn = RPN.rpn(rule);
+//                System.out.println(rpn.toString());
+                Boolean aBoolean = RPN.handleRule(rpn, new RuleOptHandler(bitMap));
+//                System.out.println(aBoolean +" "+rule);
+                cnt++;
+            }
+        }
+        long end = System.currentTimeMillis();
+        System.out.println(cnt +" cost "+(end-start));
     }
 }

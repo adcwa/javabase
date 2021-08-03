@@ -22,6 +22,11 @@ public class MathOptHandler implements  OptHandler {
         return result;
     }
 
+    @Override
+    public Object finalResult(String v) {
+        return null;
+    }
+
     private   String handlerPlus(String v1,String v2){
         System.out.println(String.format("%s  +  %s",v1,v2));
         return "%s  + %s";

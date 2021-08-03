@@ -79,7 +79,7 @@ public class BitMapUtils {
      * @param byteCmp
      * @return
      */
-    public static byte[] and(byte[] byteBase, byte[] byteCmp){
+    private static byte[] and(byte[] byteBase, byte[] byteCmp){
         byte[] ret = new byte[byteCmp.length];
         for (int i = 0; i < byteBase.length; i++) {
             ret[i] = (byte) (byteBase[i] & byteCmp[i]);
@@ -93,7 +93,7 @@ public class BitMapUtils {
      * @param byteCmp
      * @return
      */
-    public static byte[] xor(byte[] byteBase, byte[] byteCmp){
+    private static byte[] xor(byte[] byteBase, byte[] byteCmp){
         byte[] ret = new byte[byteCmp.length];
         for (int i = 0; i < byteBase.length; i++) {
             ret[i] = (byte) (byteBase[i] ^ byteCmp[i]);

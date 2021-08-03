@@ -15,4 +15,5 @@ public class BitMap {
     public void setBits(byte[] bits) {
         this.bits = bits;
     }
+
 }

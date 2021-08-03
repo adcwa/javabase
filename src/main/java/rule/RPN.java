@@ -42,7 +42,7 @@ public class RPN {
 
     }
 
-    public static void handleRule(RPN rpn, OptHandler optHandler){
+    public static <T> T  handleRule(RPN rpn, OptHandler<T> optHandler){
         Queue<String> q = rpn.rpn;
         Stack<String> vs = new Stack<>();
         while(!q.isEmpty()){
@@ -56,6 +56,11 @@ public class RPN {
                 vs.push(v);
             }
         }
+        String ret = vs.pop();
+        if(ret == null ){
+            throw new IllegalStateException("rule处理状态异常");
+        }
+        return optHandler.finalResult(ret);
     }
 
     public static RPN rpn(String rule) {
