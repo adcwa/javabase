@@ -1,5 +1,8 @@
 package rule;
 
+import rule.opt.OptHandler;
+import rule.opt.RuleOptHandler;
+
 import java.util.*;
 
 /**
@@ -13,14 +16,20 @@ public class RPN {
 
     Queue<String> rpn = new ArrayDeque<>();
 
-    public static HashMap<String, Integer> prioritizedOps = new LinkedHashMap<>(16);
+    private static final HashMap<String, Integer> prioritizedOps = new LinkedHashMap<>(16);
+
+    // single operation
+    private static final Set<String> singleOpt  = new HashSet<>();
+
 
     static {
         prioritizedOps.put("(", 1000);
         prioritizedOps.put(")", 1000);
 
         prioritizedOps.put("!", 1);
+        singleOpt.add("!");
         prioritizedOps.put("^", 2);
+        singleOpt.add("^");
         prioritizedOps.put("&", 3);
         prioritizedOps.put("|", 4);
         //        prioritizedOps.put("=>", 5);
@@ -31,6 +40,22 @@ public class RPN {
         prioritizedOps.put("+", 20);
         prioritizedOps.put("-", 20);
 
+    }
+
+    public static void handleRule(RPN rpn, OptHandler optHandler){
+        Queue<String> q = rpn.rpn;
+        Stack<String> vs = new Stack<>();
+        while(!q.isEmpty()){
+            String v = q.poll();
+            boolean isOpt = prioritizedOps.containsKey(v);
+            if(isOpt){
+                String v2 = vs.pop();
+                String v1 = singleOpt.contains(v)?null:vs.pop();
+                vs.push(optHandler.handler(v1,v2,v));
+            }else{
+                vs.push(v);
+            }
+        }
     }
 
     public static RPN rpn(String rule) {

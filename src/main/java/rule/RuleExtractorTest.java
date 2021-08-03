@@ -1,5 +1,7 @@
 package rule;
 
+import rule.opt.RuleOptHandler;
+
 /**
  * 资料：正则表达式中的特殊字符（需要转义）
  * ^ 匹配输入字符串的开始位置，除非在方括号表达式中使用，此时它表示不接受该字符集合。要匹配 ^ 字符本身，请使用 \^。
@@ -18,16 +20,26 @@ public class RuleExtractorTest {
 
     public static void main(String[] args) {
 
-        // [A, B, +, C, D, -, *]
-        System.out.println( RPN.rpn("((A+B))*(C-D)").toString());
-        // [A, B, +, C, *, D, -]
-        System.out.println( RPN.rpn("((A+B))*C-D").toString());
-        // [A, B, +, C, *, D, -]
-        System.out.println( RPN.rpn("(((A+B))*C)-D").toString());
-        // [A, !, B, C, &, |]
-        System.out.println( RPN.rpn("!A|B&C").toString());
-        //[A, B, !, |, C, |, D, E, ^, |]
-        System.out.println( RPN.rpn("A|!B|C|D^E").toString());
+//        // [A, B, +, C, D, -, *]
+//        System.out.println( RPN.rpn("((A+B))*(C-D)").toString());
+//        // [A, B, +, C, *, D, -]
+//        System.out.println( RPN.rpn("((A+B))*C-D").toString());
+//        // [A, B, +, C, *, D, -]
+//        System.out.println( RPN.rpn("(((A+B))*C)-D").toString());
+//        // [A, !, B, C, &, |]
+//        System.out.println( RPN.rpn("!A|B&C").toString());
+//        //[A, B, !, |, C, |, D, E, ^, |]
+//        System.out.println( RPN.rpn("A|!B|C|D^E").toString());
+
+        BitMap bitMap = new BitMap(102);
+
+        for (int i = 0; i < 20; i++) {
+            BitMapUtils.setBit(bitMap.getBits(),i);
+        }
+
+        RPN rpn = RPN.rpn("A|!B|C|D^E");
+        System.out.println(rpn.toString());
+        RPN.handleRule(rpn,new RuleOptHandler(bitMap));
 
 
 
