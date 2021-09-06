@@ -30,14 +30,14 @@ public class RuleTest {
 //        //[A, B, !, |, C, |, D, E, ^, |]
 //        System.out.println( RPN.rpn("A|!B|C|D^E").toString());
 
-        test();
-//        long start = System.currentTimeMillis();
-//        // 模拟多个车
-//        for (int i = 0; i < 200; i++) {
-//            testC(10000,i+3);
-//        }
-//        long end = System.currentTimeMillis();
-//        System.out.println( " cost "+(end-start));
+//        test();
+        long start = System.currentTimeMillis();
+        // 模拟多个车
+        for (int i = 0; i < 200; i++) {
+            testC(10000,i+3);
+        }
+        long end = System.currentTimeMillis();
+        System.out.println( " cost "+(end-start));
     }
     public static void testC(int capacity , int step ){
         // 模拟一个车的配置
@@ -63,16 +63,15 @@ public class RuleTest {
                         append(8).append(i).append(j).append("&").
                         append("(").append(9).append(i).append(j).append("|").append(i).append(j).append(")").
                         append("^F11").toString();
-//                String rule  = "1"+i+""+j;
                 RPN rpn = RPN.build(rule);
-//                System.out.println(rpn.toString());
+//                System.out.println(rule+": "+rpn.toString());
                 Boolean aBoolean = RPN.handleRule(rpn, new RuleOptHandler(bitMap));
 //                System.out.println(aBoolean +" "+rule);
                 cnt++;
             }
         }
         long end = System.currentTimeMillis();
-        System.out.println(cnt +" cost "+(end-start));
+//        System.out.println(cnt +" cost "+(end-start));
     }
 
     public static void test(){
