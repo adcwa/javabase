@@ -1,6 +1,5 @@
 package util;
 
-
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -16,13 +15,13 @@ public class TreeUtil {
      * @param handler     方法
      * @param <T>         t
      */
-    public static <T> void bottomup(T parent, T node, Function<T, List<?>> getChildren, BiConsumer<T, T> handler) {
-        List<?> children = getChildren.apply(node);
+    public static <T> void bottomup(T parent, T node, Function<T, List<T>> getChildren, BiConsumer<T, T> handler) {
+        List<T> children = getChildren.apply(node);
 
         if (children != null && children.size() > 0) {
             // 中间节点，先处理子节点
-            for (Object child : children) {
-                TreeUtil.bottomup(node, (T) child, getChildren, handler);
+            for (T child : children) {
+                TreeUtil.bottomup(node, child, getChildren, handler);
             }
             // 处理完子节点处理父级节点，直到parent=null
             handler.accept(parent, node);
@@ -42,16 +41,16 @@ public class TreeUtil {
      * @param comparator  比较方法
      * @param <T>         t
      */
-    public static <T> void bottomup(T parent, T node, Function<T, List<?>> getChildren, BiConsumer<T, T> handler, Comparator comparator) {
-        List<?> children = getChildren.apply(node);
+    public static <T> void bottomup(T parent, T node, Function<T, List<T>> getChildren, BiConsumer<T, T> handler, Comparator comparator) {
+        List<T> children = getChildren.apply(node);
 
         if (children != null && children.size() > 0) {
             if (null != comparator) {
                 children.sort(comparator);
             }
             // 中间节点，先处理子节点
-            for (Object child : children) {
-                TreeUtil.bottomup(node, (T) child, getChildren, handler);
+            for (T child : children) {
+                TreeUtil.bottomup(node, child, getChildren, handler);
             }
             // 处理完子节点处理父级节点，直到parent=null
             handler.accept(parent, node);
@@ -68,7 +67,7 @@ public class TreeUtil {
      * @param <T>
      * @see TreeUtil#bottomup(Object, Object, Function, BiConsumer)
      */
-    public static <T> void bottomup(List<T> rootList, Function<T, List<?>> getChildren, BiConsumer<T, T> handler) {
+    public static <T> void bottomup(List<T> rootList, Function<T, List<T>> getChildren, BiConsumer<T, T> handler) {
         for (T root : rootList) {
             bottomup(null, root, getChildren, handler);
         }
@@ -82,28 +81,27 @@ public class TreeUtil {
      * @param handler     方法
      * @param <T>         t
      */
-    public static <T> void topdown(T root, Function<T, List<?>> getChildren, BiConsumer<T, T> handler) {
-        List<?> children = getChildren.apply(root);
+    public static <T> void topdown(T root, Function<T, List<T>> getChildren, BiConsumer<T, T> handler) {
+        List<T> children = getChildren.apply(root);
         if (children != null && children.size() > 0) {
-            for (Object child : children) {
-                handler.accept(root, (T) child);
-                TreeUtil.topdown((T) child, getChildren, handler);
+            for (T child : children) {
+                handler.accept(root, child);
+                TreeUtil.topdown(child, getChildren, handler);
             }
         }
     }
 
-    public static <T> void topdown(List<T> root, Function<T, List<?>> getChildren, BiConsumer<T, T> handler) {
+    public static <T> void topdown(List<T> root, Function<T, List<T>> getChildren, BiConsumer<T, T> handler) {
         for (T child : root) {
             handler.accept(null, (T) child);
             TreeUtil.topdown((T) child, getChildren, handler);
         }
     }
 
-    public static <T> void listTree(List<T> root, Function<T, List<?>> getChildren, Function<T, String> toString) {
+    public static <T> void listTree(List<T> root, Function<T, List<T>> getChildren, Function<T, String> toString) {
         topdown(root, getChildren, (parent, child) -> {
             toString.apply(child);
         });
-
     }
 
     public static <T, E> List<T> buildTree(List<T> flatList, E rootId, Function<T, E> parentIdGetter, Function<T, E> idGetter,
